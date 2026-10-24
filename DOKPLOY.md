@@ -14,12 +14,13 @@
 Copie de `.env.dokploy.example`:
 
 ```env
-API_PROXY_UPSTREAM=https://backlmbot.simplapp.com.br
+API_PUBLIC_URL=https://backlmbot.simplapp.com.br
 ```
 
-- Com domínio público: use `https://` (o nginx faz proxy de `/api` e manda o `Host` certo).
-- Na mesma rede Docker: `nome-interno-do-backend:3001` (http).
+O browser chama a API direto. Evita 502 no `/api` do nginx.
+
 - **Não** configure `DATABASE_URL`, `MYSQL_*`, `REDIS_*` neste app.
+- No backend, `API_CORS_ORIGINS` já inclui `https://rdofertas.simplapp.com.br`.
 
 ## Build arguments (opcional)
 

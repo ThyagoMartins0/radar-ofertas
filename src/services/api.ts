@@ -1,3 +1,4 @@
+import { resolveApiBaseUrl } from '../utils/api-base-url.js';
 import {
   clearTokens,
   getAccessToken,
@@ -38,9 +39,7 @@ import {
 const API_PREFIX = '/api/v1';
 
 function resolveBaseUrl(): string {
-  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
-  if (configured) return configured.replace(/\/$/, '');
-  return '';
+  return resolveApiBaseUrl();
 }
 
 type RequestOptions = Omit<RequestInit, 'body'> & {

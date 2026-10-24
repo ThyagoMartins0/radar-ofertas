@@ -31,6 +31,10 @@ server {
         chunked_transfer_encoding off;
     }
 
+    location = /config.js {
+        add_header Cache-Control "no-store";
+    }
+
     location /assets/ {
         expires 7d;
         add_header Cache-Control "public, immutable";

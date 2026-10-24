@@ -3,14 +3,13 @@ import { useEffect, useRef } from 'react';
 import type { LogsStreamLogEvent, LogsStreamReadyEvent } from '../types/api-types.js';
 
 import { getAccessToken } from '../services/auth-storage.js';
+import { resolveApiBaseUrl } from '../utils/api-base-url.js';
 import { readSseStream } from '../utils/sse.js';
 
 const API_PREFIX = '/api/v1';
 
 function resolveBaseUrl(): string {
-  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
-  if (configured) return configured.replace(/\/$/, '');
-  return '';
+  return resolveApiBaseUrl();
 }
 
 type UseLogsStreamOptions = {

@@ -20,6 +20,7 @@ FROM nginx:1.27-alpine AS runtime
 ENV API_PROXY_UPSTREAM=host.docker.internal:3001
 ENV API_PROXY_SCHEME=http
 ENV API_PROXY_HOST=host.docker.internal
+ENV API_PUBLIC_URL=https://backlmbot.simplapp.com.br
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
 ENV NGINX_ENVSUBST_FILTER=^API_PROXY_
@@ -42,6 +43,10 @@ RUN printf '%s\n' \
   'export API_PROXY_SCHEME="$scheme"' \
   'export API_PROXY_UPSTREAM="$hostport"' \
   'export API_PROXY_HOST="$hostonly"' \
+  'url="${API_PUBLIC_URL:-https://backlmbot.simplapp.com.br}"' \
+  'url="${url%/}"' \
+  'url=$(printf "%s" "$url" | tr -cd "A-Za-z0-9._/:?-")' \
+  'printf "window.__API_BASE_URL__=\"%s\";\\n" "$url" > /usr/share/nginx/html/config.js' \
   > /docker-entrypoint.d/18-normalize-upstream.envsh
 
 EXPOSE 80
