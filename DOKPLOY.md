@@ -14,11 +14,11 @@
 Copie de `.env.dokploy.example`:
 
 ```env
-API_PROXY_UPSTREAM=nome-interno-do-app-backend:3001
+API_PROXY_UPSTREAM=https://backlmbot.simplapp.com.br
 ```
 
-- Sem `http://` — só `host:porta`.
-- Descubra o hostname na rede Docker do Dokploy (nome do serviço/backend).
+- Com domínio público: use `https://` (o nginx faz proxy de `/api` e manda o `Host` certo).
+- Na mesma rede Docker: `nome-interno-do-backend:3001` (http).
 - **Não** configure `DATABASE_URL`, `MYSQL_*`, `REDIS_*` neste app.
 
 ## Build arguments (opcional)
@@ -50,5 +50,5 @@ O 502 em `GET /` significa que o Traefik não alcança o nginx (container parado
 1. **HTTPS ligado** + Container Port **80**.
 2. Deploy/build verde e container **Running** (não Restarting).
 3. Logs: `nginx` iniciou sem `host not found in upstream`.
-4. `API_PROXY_UPSTREAM` = hostname interno da API (`app:3001`), sem `http://`.
-   Um valor errado não pode mais derrubar a home — só o `/api` falha.
+4. `API_PROXY_UPSTREAM=https://backlmbot.simplapp.com.br` — sem isso o login em `/api` dá 502.
+   Um valor errado não derruba a home — só o `/api` falha.

@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 # Dokploy: context = raiz | este Dockerfile | Container Port = 80
 #
-# Runtime: API_PROXY_UPSTREAM=hostname-interno-api:3001
-# Build arg (opcional): VITE_API_BASE_URL=https://api.seudominio.com
+# Runtime: API_PROXY_UPSTREAM=https://backlmbot.simplapp.com.br
+#   ou hostname-interno:3001 na mesma rede Docker
 
 FROM node:22-bookworm-slim AS build
 
@@ -23,9 +23,11 @@ FROM nginx:1.27-alpine AS runtime
 LABEL org.opencontainers.image.title="radar-ofertas-frontend"
 
 ENV API_PROXY_UPSTREAM=host.docker.internal:3001
+ENV API_PROXY_SCHEME=http
+ENV API_PROXY_HOST=host.docker.internal
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
-ENV NGINX_ENVSUBST_FILTER=^API_PROXY_UPSTREAM$
+ENV NGINX_ENVSUBST_FILTER=^API_PROXY_
 
 COPY docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
@@ -33,12 +35,19 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # .envsh é sourced pelo entrypoint oficial (export vale para o envsubst).
 RUN printf '%s\n' \
   '#!/bin/sh' \
-  'UPSTREAM="${API_PROXY_UPSTREAM:-host.docker.internal:3001}"' \
-  'UPSTREAM="${UPSTREAM#http://}"' \
-  'UPSTREAM="${UPSTREAM#https://}"' \
-  'UPSTREAM="${UPSTREAM%/}"' \
-  '[ -n "$UPSTREAM" ] || UPSTREAM="host.docker.internal:3001"' \
-  'export API_PROXY_UPSTREAM="$UPSTREAM"' \
+  'raw="${API_PROXY_UPSTREAM:-host.docker.internal:3001}"' \
+  'scheme=http' \
+  'case "$raw" in' \
+  '  https://*) scheme=https; raw="${raw#https://}" ;;' \
+  '  http://*) scheme=http; raw="${raw#http://}" ;;' \
+  'esac' \
+  'raw="${raw%/}"' \
+  '[ -n "$raw" ] || raw="host.docker.internal:3001"' \
+  'hostport="${raw%%/*}"' \
+  'hostonly="${hostport%%:*}"' \
+  'export API_PROXY_SCHEME="$scheme"' \
+  'export API_PROXY_UPSTREAM="$hostport"' \
+  'export API_PROXY_HOST="$hostonly"' \
   > /docker-entrypoint.d/18-normalize-upstream.envsh
 
 EXPOSE 80
