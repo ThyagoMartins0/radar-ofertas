@@ -202,7 +202,7 @@ export function SettingsPage() {
             setConfigTarget({ accountId, platform: 'mercado_livre' })
           }
           onLoginMercadoLivre={(accountId) => {
-            openNovncTab(accounts.novncPort);
+            openNovncTab({ novncUrl: accounts.novncUrl, novncPort: accounts.novncPort });
             setMlLoginAccountId(accountId);
           }}
           onToggleMercadoLivre={(accountId) =>

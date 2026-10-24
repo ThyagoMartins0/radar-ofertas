@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { MercadoLivreConnectState, WhatsAppConnectState } from '../../types/api.js';
 import { usePolling } from '../../hooks/usePolling.js';
-import { buildNovncUrl } from '../../utils/novnc.js';
+import { isNovncMisconfigured, resolveNovncUrl } from '../../utils/novnc.js';
 import { Button } from '../ui/Button.js';
 import { Modal } from '../ui/Modal.js';
 
 const QR_API = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=';
-const IDLE_ML_STATE: MercadoLivreConnectState = { status: 'idle', error: null, novncPort: null };
+const IDLE_ML_STATE: MercadoLivreConnectState = {
+  status: 'idle',
+  error: null,
+  novncPort: null,
+  novncUrl: null,
+};
 
 type WhatsAppLoginModalProps = {
   open: boolean;
@@ -189,7 +194,7 @@ export function MercadoLivreLoginModal({
       setState(IDLE_ML_STATE);
       return;
     }
-    setState({ status: 'opening', error: null, novncPort: null });
+    setState({ status: 'opening', error: null, novncPort: null, novncUrl: null });
     let cancelled = false;
     void onStartRef.current(accountId)
       .then((next) => {
@@ -197,7 +202,12 @@ export function MercadoLivreLoginModal({
       })
       .catch(() => {
         if (!cancelled) {
-          setState({ status: 'error', error: 'Falha ao abrir navegador', novncPort: null });
+          setState({
+            status: 'error',
+            error: 'Falha ao abrir navegador',
+            novncPort: null,
+            novncUrl: null,
+          });
         }
       });
     return () => {
@@ -237,7 +247,11 @@ export function MercadoLivreLoginModal({
     onClose();
   }
 
-  const novncUrl = buildNovncUrl(state.novncPort);
+  const novncUrl = resolveNovncUrl({ novncUrl: state.novncUrl, novncPort: state.novncPort });
+  const novncMisconfigured = isNovncMisconfigured({
+    novncUrl: state.novncUrl,
+    novncPort: state.novncPort,
+  });
 
   function renderStatus() {
     switch (state.status) {
@@ -282,6 +296,13 @@ export function MercadoLivreLoginModal({
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm font-medium text-text-primary">{renderStatus()}</p>
+        {novncMisconfigured ? (
+          <p className="text-sm text-error">
+            noVNC está ativo na API, mas falta a URL pública. No Dokploy da API defina{' '}
+            <code className="text-xs">MANAGER_NOVNC_PUBLIC_URL=https://seu-dominio-vnc</code>{' '}
+            (domínio com Container Port 6080) e faça redeploy do backend e do painel.
+          </p>
+        ) : null}
         {novncUrl ? (
           <>
             <ol className="list-decimal space-y-2 pl-5 text-sm text-text-secondary">

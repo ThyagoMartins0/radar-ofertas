@@ -21,6 +21,7 @@ O browser chama a API direto. Evita 502 no `/api` do nginx.
 
 - **Não** configure `DATABASE_URL`, `MYSQL_*`, `REDIS_*` neste app.
 - No backend, `API_CORS_ORIGINS` já inclui `https://rdofertas.simplapp.com.br`.
+- Login ML (noVNC): o link **não** usa `rdofertas:6080`. A API envia `novncUrl` quando `MANAGER_NOVNC_PUBLIC_URL` está definida no backend. Opcional no build: `VITE_NOVNC_PUBLIC_URL` (mesmo host do domínio VNC na porta 6080).
 
 ## Build arguments (opcional)
 

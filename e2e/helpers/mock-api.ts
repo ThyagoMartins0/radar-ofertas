@@ -51,6 +51,7 @@ export const MOCK_SETTINGS = {
     canSpawnWorkers: true,
   },
   novncPort: null,
+  novncUrl: null,
   mlCouponsUrl: 'https://www.mercadolivre.com.br/afiliados/coupons#hub',
   amazonAffiliate: { baseUrl: 'https://www.amazon.com.br/', affiliateLinkPrefix: '', storeId: '' },
   amazonCollectionEnabled: true,
@@ -304,6 +305,7 @@ export async function mockAccountsApi(page: Page): Promise<void> {
           marketplacePlatforms: [{ id: 'mercado_livre', label: 'Mercado Livre' }],
           canSpawnWorkers: true,
           novncPort: null,
+  novncUrl: null,
         }),
       });
       return;

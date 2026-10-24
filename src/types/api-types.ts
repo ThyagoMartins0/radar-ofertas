@@ -236,6 +236,8 @@ export type SettingsResponse = {
   };
   /** Porta noVNC para abrir o desktop do login ML (null = desabilitado). */
   novncPort: number | null;
+  /** URL pública do viewer noVNC (Dokploy); preferir em relação a novncPort. */
+  novncUrl: string | null;
   mlCouponsUrl: string;
   amazonAffiliate: {
     baseUrl: string;
@@ -419,6 +421,7 @@ export type AccountsResponse = {
   canSpawnWorkers: boolean;
   /** Porta noVNC para abrir o desktop do login ML (null = desabilitado). */
   novncPort: number | null;
+  novncUrl: string | null;
 };
 
 export type WhatsAppConnectState = {
@@ -430,8 +433,9 @@ export type WhatsAppConnectState = {
 export type MercadoLivreConnectState = {
   status: 'idle' | 'opening' | 'awaiting-login' | 'saving' | 'connected' | 'error';
   error: string | null;
-  /** Porta do noVNC no host quando `MANAGER_VNC_ENABLED`; o painel monta a URL com o hostname atual. */
   novncPort: number | null;
+  /** URL pública do viewer (backend `MANAGER_NOVNC_PUBLIC_URL`). */
+  novncUrl: string | null;
 };
 
 export type TelegramVerifyState = {
