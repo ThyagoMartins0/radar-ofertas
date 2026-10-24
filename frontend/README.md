@@ -1,44 +1,58 @@
 # Radar Ofertas — Frontend
 
-SPA React (Vite) do painel. **Backend/API** no repositório `radar-ofertas-backend`.
+SPA React (Vite). **Não** inclui banco nem workers — só UI + proxy HTTP para o **radar-ofertas-backend**.
 
-## Configuração
+## Variáveis (`cp .env.example .env`)
 
-```bash
-cp .env.example .env
-```
+| Variável | Quando |
+|----------|--------|
+| `VITE_DEV_API_PROXY_TARGET` | `npm run dev` ou Docker dev — destino do proxy `/api` |
+| `VITE_API_BASE_URL` | Build com API em outro domínio (sem proxy nginx) |
+| `API_PROXY_UPSTREAM` | Docker prod — `host:porta` da API (ex. `host.docker.internal:3001` ou `api:3001`) |
 
-| Variável | Uso |
-|----------|-----|
-| `VITE_DEV_API_PROXY_TARGET` | Dev: destino do proxy `/api` (padrão `http://127.0.0.1:3001`) |
-| `VITE_API_BASE_URL` | Produção: URL absoluta da API (se não usar proxy nginx) |
-| `API_PROXY_UPSTREAM` | Docker prod: host:porta do backend para nginx (padrão `host.docker.internal:3001`) |
+No backend: `API_CORS_ORIGINS` com a URL do painel, se usar `VITE_API_BASE_URL` direto.
 
-No **backend**, configure `API_CORS_ORIGINS` com a URL do painel (ex.: `http://localhost:5173`).
-
-## Desenvolvimento local
+## Local (sem Docker)
 
 ```bash
-# Terminal 1 — backend (outro repo)
-cd ../radar-ofertas-backend
-cp .env.example .env
-npm run api
-
-# Terminal 2 — frontend
 npm install
-npm run dev
+npm run dev   # http://localhost:5173
 ```
 
-Painel: **http://localhost:5173** — login `API_ADMIN_USERNAME` / `API_ADMIN_PASSWORD` do backend.
+Backend em outro terminal: `npm run api` no repo backend.
 
 ## Docker
 
-Com o backend rodando e API em **:3001** no host:
+**Produção** (nginx + SPA, proxy `/api`):
 
 ```bash
-docker compose --profile dev up -d frontend-dev    # HMR :5173
-docker compose --profile prod up -d --build frontend # nginx :3000, proxy /api
+docker compose up -d --build
+# http://localhost:3000
 ```
+
+**Desenvolvimento** (Vite HMR):
+
+```bash
+docker compose --profile dev up -d --build
+# http://localhost:5173
+```
+
+Scripts npm: `npm run docker:up`, `docker:dev`, `docker:down`, `docker:logs`.
+
+### API na rede Docker do backend
+
+```bash
+cp docker-compose.backend-network.yml.example docker-compose.override.yml
+# API_PROXY_UPSTREAM=api:3001
+docker compose up -d --build
+```
+
+### Dokploy
+
+- **Build context:** pasta `frontend/` (ou raiz se o repo for só o front).
+- **Dockerfile:** `docker/Dockerfile.prod`
+- **Porta:** `80` → mapear para domínio do painel.
+- **Env:** `API_PROXY_UPSTREAM` = host interno da API (não use `DATABASE_URL` aqui).
 
 ## Testes
 

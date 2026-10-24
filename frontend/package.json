@@ -10,7 +10,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "docker:up": "docker compose up -d --build",
+    "docker:dev": "docker compose --profile dev up -d --build",
+    "docker:down": "docker compose --profile dev down",
+    "docker:logs": "docker compose logs -f"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

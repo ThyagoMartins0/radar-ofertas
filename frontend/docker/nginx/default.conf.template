@@ -9,16 +9,18 @@ server {
     gzip_types text/css application/javascript application/json image/svg+xml;
     gzip_min_length 256;
 
-    # Backend em outro repositório — API publicada no host (ex.: :3001).
-    # Sobrescreva com API_PROXY_UPSTREAM no docker-compose (ex.: api:3001 na mesma rede).
+    # API REST (repositório radar-ofertas-backend). Placeholder substituído no entrypoint.
     location /api/ {
-        proxy_pass http://API_PROXY_UPSTREAM_PLACEHOLDER;
+        proxy_pass http://__API_UPSTREAM__;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 120s;
+        proxy_buffering off;
+        proxy_cache off;
+        chunked_transfer_encoding off;
     }
 
     location /assets/ {

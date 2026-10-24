@@ -1,0 +1,3 @@
+# Atalho na raiz do repo → compose em frontend/
+include:
+  - path: frontend/docker-compose.yml
