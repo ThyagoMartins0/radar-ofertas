@@ -47,7 +47,8 @@ RUN printf '%s\n' \
   'url="${url%/}"' \
   'url=$(printf "%s" "$url" | tr -cd "A-Za-z0-9._/:?-")' \
   'printf "window.__API_BASE_URL__=\"%s\";\\n" "$url" > /usr/share/nginx/html/config.js' \
-  > /docker-entrypoint.d/18-normalize-upstream.envsh
+  > /docker-entrypoint.d/18-normalize-upstream.envsh \
+  && chmod +x /docker-entrypoint.d/18-normalize-upstream.envsh
 
 EXPOSE 80
 

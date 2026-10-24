@@ -33,7 +33,7 @@ ENV NGINX_ENVSUBST_FILTER=^API_PROXY_
 COPY docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# .envsh é sourced pelo entrypoint oficial (export vale para o envsubst).
+# .envsh é sourced pelo entrypoint oficial (export vale para o envsubst) — só se for executável.
 RUN printf '%s\n' \
   '#!/bin/sh' \
   'raw="${API_PROXY_UPSTREAM:-host.docker.internal:3001}"' \
@@ -53,7 +53,8 @@ RUN printf '%s\n' \
   'url="${url%/}"' \
   'url=$(printf "%s" "$url" | tr -cd "A-Za-z0-9._/:?-")' \
   'printf "window.__API_BASE_URL__=\"%s\";\\n" "$url" > /usr/share/nginx/html/config.js' \
-  > /docker-entrypoint.d/18-normalize-upstream.envsh
+  > /docker-entrypoint.d/18-normalize-upstream.envsh \
+  && chmod +x /docker-entrypoint.d/18-normalize-upstream.envsh
 
 EXPOSE 80
 
