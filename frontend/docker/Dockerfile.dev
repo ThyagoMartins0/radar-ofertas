@@ -8,6 +8,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 
+COPY docker/check-env.sh /usr/local/bin/check-frontend-env.sh
+RUN chmod +x /usr/local/bin/check-frontend-env.sh
+
 EXPOSE 5173
 
+ENTRYPOINT ["/usr/local/bin/check-frontend-env.sh"]
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
