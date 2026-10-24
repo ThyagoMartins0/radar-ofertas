@@ -1,0 +1,1 @@
+function r(t){return t.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}function n(t){if(!t)return"—";const e=new Date(t);return Number.isNaN(e.getTime())?"—":new Intl.DateTimeFormat("pt-BR",{timeZone:"UTC",dateStyle:"short",timeStyle:"medium"}).format(e)}function a(t,e){return t.length<=e?t:`${t.slice(0,e)}…`}export{n as a,r as f,a as t};
