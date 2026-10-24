@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
-# Build na raiz do repo (Dokploy / docker build .).
-# Painel React — sem backend. API via API_PROXY_UPSTREAM no runtime.
+# Dokploy / docker build . — painel React (nginx :80). Sem entrypoint customizado.
 
 FROM node:22-bookworm-slim AS build
 
@@ -18,19 +17,10 @@ RUN npm run build
 
 FROM nginx:1.27-alpine AS runtime
 
-RUN apk add --no-cache curl
+# Substituído pelo entrypoint oficial do nginx (envsubst em /etc/nginx/templates/*.template)
+ENV API_PROXY_UPSTREAM=host.docker.internal:3001
 
 COPY frontend/docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
-COPY frontend/docker/entrypoint.sh /docker-entrypoint.sh
-RUN sed -i 's/\r$//' /docker-entrypoint.sh \
-  && chmod +x /docker-entrypoint.sh \
-  && rm -f /etc/nginx/conf.d/default.conf
-
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -fsS http://127.0.0.1/ >/dev/null || exit 1
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
