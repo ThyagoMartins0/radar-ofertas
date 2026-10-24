@@ -13,7 +13,7 @@ function buildTestEnv(overrides: Partial<Env> = {}): Env {
   return {
     NODE_ENV: 'local',
     APP_TIMEZONE: 'America/Sao_Paulo',
-    DATABASE_URL: 'postgresql://radar:radar_secret@localhost:5432/radar_ofertas',
+    DATABASE_URL: 'mysql://radar:radar_secret@localhost:3306/radar_ofertas',
     REDIS_URL: 'redis://localhost:6379',
     WHATSAPP_CHANNEL_ID: '',
     WHATSAPP_AUTH_PATH: './data/auth_info_baileys',

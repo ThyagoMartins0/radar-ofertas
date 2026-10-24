@@ -6,10 +6,10 @@ export interface DatabaseSnapshot {
 export function databaseErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     if (error.message.includes('Authentication failed')) {
-      return 'Credenciais do PostgreSQL inválidas — confira DATABASE_URL no .env';
+      return 'Credenciais do MySQL inválidas — confira DATABASE_URL no .env';
     }
     if (error.message.includes('ECONNREFUSED') || error.message.includes("Can't reach database")) {
-      return 'PostgreSQL offline — suba com docker compose up -d postgres';
+      return 'MySQL offline — suba com docker compose up -d mysql';
     }
     return error.message;
   }

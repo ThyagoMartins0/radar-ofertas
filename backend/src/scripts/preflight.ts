@@ -30,11 +30,11 @@ function maskUrl(url: string): string {
 }
 
 function databaseFixHint(message: string): string {
-  if (message.includes('database system is starting up')) {
-    return 'O PostgreSQL remoto ainda está iniciando ou em recovery. Aguarde 1–2 min e rode npm run check de novo. Se persistir, verifique o serviço/container no servidor.';
+  if (message.includes('ECONNREFUSED') || message.includes('connect ETIMEDOUT')) {
+    return 'O MySQL ainda não está acessível. Aguarde o container subir ou confira host/porta na DATABASE_URL.';
   }
-  if (message.includes('does not support TLS') || message.includes('TLS handshake')) {
-    return 'Adicione ?sslmode=disable na DATABASE_URL (servidor sem SSL).';
+  if (message.includes('Access denied')) {
+    return 'Credenciais inválidas — confira MYSQL_USER, MYSQL_PASSWORD e DATABASE_URL no .env';
   }
   return 'Confira DATABASE_URL e rode: npm run migrate:deploy';
 }
@@ -42,12 +42,12 @@ function databaseFixHint(message: string): string {
 async function checkDatabase(): Promise<PreflightItem> {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return { ok: true, label: 'PostgreSQL', detail: maskUrl(env.DATABASE_URL) };
+    return { ok: true, label: 'MySQL', detail: maskUrl(env.DATABASE_URL) };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
       ok: false,
-      label: 'PostgreSQL',
+      label: 'MySQL',
       detail: message,
       fix: databaseFixHint(message),
     };
@@ -57,9 +57,9 @@ async function checkDatabase(): Promise<PreflightItem> {
 async function checkOfferDeliverySchema(): Promise<PreflightItem> {
   try {
     const rows = await prisma.$queryRaw<Array<{ column_name: string }>>`
-      SELECT column_name
+      SELECT COLUMN_NAME AS column_name
       FROM information_schema.columns
-      WHERE table_schema = 'public'
+      WHERE table_schema = DATABASE()
         AND table_name = 'offer_deliveries'
         AND column_name = 'account_id'
     `;
@@ -255,9 +255,9 @@ async function checkAmazonSources(): Promise<PreflightItem> {
 async function checkUsersTable(): Promise<PreflightItem> {
   try {
     const rows = await prisma.$queryRaw<Array<{ table_name: string }>>`
-      SELECT table_name
+      SELECT TABLE_NAME AS table_name
       FROM information_schema.tables
-      WHERE table_schema = 'public'
+      WHERE table_schema = DATABASE()
         AND table_name = 'users'
     `;
 

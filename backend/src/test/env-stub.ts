@@ -9,7 +9,7 @@ export function stubEnv(overrides: Partial<Env> = {}): Env {
   const base: Env = {
     NODE_ENV: 'local',
     APP_TIMEZONE: 'America/Sao_Paulo',
-    DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+    DATABASE_URL: 'mysql://test:test@localhost:3306/test',
     REDIS_URL: 'redis://localhost:6379',
     REDIS_ENABLED: false,
     WHATSAPP_CHANNEL_ID: 'test-channel-id',

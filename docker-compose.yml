@@ -12,7 +12,7 @@ x-app-environment: &app-environment
   APP_TIMEZONE: ${APP_TIMEZONE:-America/Sao_Paulo}
   REDIS_ENABLED: "true"
   TELEGRAM_ENABLED: "false"
-  DATABASE_URL: postgresql://${POSTGRES_USER:-radar}:${POSTGRES_PASSWORD:-radar_secret}@postgres:5432/${POSTGRES_DB:-radar_ofertas}
+  DATABASE_URL: mysql://${MYSQL_USER:-radar}:${MYSQL_PASSWORD:-radar_secret}@mysql:3306/${MYSQL_DATABASE:-radar_ofertas}
   REDIS_URL: redis://redis:6379
   WHATSAPP_AUTH_PATH: /app/data/auth_info_baileys
   ML_AUTH_PATH: /app/data/ml_auth
@@ -33,7 +33,7 @@ x-app-base: &app-base
   volumes:
     - ./data:/app/data
   depends_on:
-    postgres:
+    mysql:
       condition: service_healthy
     redis:
       condition: service_healthy
@@ -41,26 +41,37 @@ x-app-base: &app-base
       condition: service_completed_successfully
 
 services:
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.4
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-radar}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-radar_secret}
-      POSTGRES_DB: ${POSTGRES_DB:-radar_ofertas}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-radar_root_secret}
+      MYSQL_USER: ${MYSQL_USER:-radar}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-radar_secret}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-radar_ofertas}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${MYSQL_PORT:-3306}:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-radar} -d ${POSTGRES_DB:-radar_ofertas}",
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD:-radar_root_secret}",
         ]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
@@ -84,7 +95,7 @@ services:
       <<: *app-environment
     command: ["npm", "run", "migrate:deploy"]
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
 
   collector:
@@ -153,5 +164,5 @@ services:
         condition: service_started
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:

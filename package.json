@@ -13,7 +13,7 @@
     "worker": "tsx watch --env-file=.env backend/src/worker.ts",
     "api": "tsx watch --env-file=.env --clear-screen=false --include \"./backend/**\" backend/api/server.ts",
     "dev:frontend": "npm run dev --workspace=frontend",
-    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis migrate api collector scheduler worker frontend-dev",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d mysql redis migrate api collector scheduler worker frontend-dev",
     "docker:dev:frontend": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d frontend-dev",
     "docker:dev:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "build:frontend": "npm run build --workspace=frontend",
