@@ -34,11 +34,21 @@ No backend, configure `API_CORS_ORIGINS=https://rdofertas.simplapp.com.br`.
 ## Domain
 
 - Host: `rdofertas.simplapp.com.br`
+- Path / Internal Path: `/`
+- Strip Path: desligado
 - Container Port: **80**
-- HTTPS: Let's Encrypt
+- Custom Entrypoint: desligado
+- **HTTPS: ligado** (Let's Encrypt)
+- Middlewares: vazio
+
+HTTP sem HTTPS no painel ainda redireciona (308) para `https://` no Traefik — deixe o toggle **ligado**.
 
 ## 502
 
-1. Deploy/build verde e container **Running**.
-2. Logs: sem erro de `nginx -t`.
-3. `API_PROXY_UPSTREAM` apontando para o backend na mesma rede.
+O 502 em `GET /` significa que o Traefik não alcança o nginx (container parado ou crash na subida), não um erro de API.
+
+1. **HTTPS ligado** + Container Port **80**.
+2. Deploy/build verde e container **Running** (não Restarting).
+3. Logs: `nginx` iniciou sem `host not found in upstream`.
+4. `API_PROXY_UPSTREAM` = hostname interno da API (`app:3001`), sem `http://`.
+   Um valor errado não pode mais derrubar a home — só o `/api` falha.

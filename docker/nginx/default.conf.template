@@ -1,5 +1,6 @@
 server {
     listen 80;
+    listen [::]:80;
     server_name _;
 
     root /usr/share/nginx/html;
@@ -9,13 +10,19 @@ server {
     gzip_types text/css application/javascript application/json image/svg+xml;
     gzip_min_length 256;
 
+    # DNS do Docker. proxy_pass com variável: o host da API só é resolvido
+    # na hora do /api — se o nome não existir, a home continua no ar.
+    resolver 127.0.0.11 valid=30s ipv6=off;
+
     location /api/ {
-        proxy_pass http://${API_PROXY_UPSTREAM};
+        set $api_upstream ${API_PROXY_UPSTREAM};
+        proxy_pass http://$api_upstream;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 10s;
         proxy_read_timeout 120s;
         proxy_buffering off;
         proxy_cache off;

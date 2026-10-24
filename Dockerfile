@@ -25,8 +25,23 @@ LABEL org.opencontainers.image.title="radar-ofertas-frontend"
 ENV API_PROXY_UPSTREAM=host.docker.internal:3001
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
+ENV NGINX_ENVSUBST_FILTER=^API_PROXY_UPSTREAM$
 
 COPY docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# .envsh é sourced pelo entrypoint oficial (export vale para o envsubst).
+RUN printf '%s\n' \
+  '#!/bin/sh' \
+  'UPSTREAM="${API_PROXY_UPSTREAM:-host.docker.internal:3001}"' \
+  'UPSTREAM="${UPSTREAM#http://}"' \
+  'UPSTREAM="${UPSTREAM#https://}"' \
+  'UPSTREAM="${UPSTREAM%/}"' \
+  '[ -n "$UPSTREAM" ] || UPSTREAM="host.docker.internal:3001"' \
+  'export API_PROXY_UPSTREAM="$UPSTREAM"' \
+  > /docker-entrypoint.d/18-normalize-upstream.envsh
+
 EXPOSE 80
+
+HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
