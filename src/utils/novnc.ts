@@ -20,6 +20,10 @@ export function resolveNovncUrl(source: NovncLinkSource = {}): string | null {
   const fromApi = source.novncUrl?.trim();
   if (fromApi) return normalizeNovncViewerUrl(fromApi);
 
+  const fromRuntime =
+    typeof window === 'undefined' ? '' : window.__NOVNC_PUBLIC_URL__?.trim();
+  if (fromRuntime) return normalizeNovncViewerUrl(fromRuntime);
+
   const fromEnv = import.meta.env.VITE_NOVNC_PUBLIC_URL?.trim();
   if (fromEnv) return normalizeNovncViewerUrl(fromEnv);
 

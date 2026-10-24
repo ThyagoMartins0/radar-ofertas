@@ -8,6 +8,8 @@ interface ImportMetaEnv {
 
 interface Window {
   __API_BASE_URL__?: string;
+  /** Runtime (/config.js): `NOVNC_PUBLIC_URL` ou `VITE_NOVNC_PUBLIC_URL` no container. */
+  __NOVNC_PUBLIC_URL__?: string;
 }
 
 interface ImportMeta {

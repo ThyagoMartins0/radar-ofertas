@@ -15,7 +15,10 @@ Copie de `.env.dokploy.example`:
 
 ```env
 API_PUBLIC_URL=https://backlmbot.simplapp.com.br
+VITE_NOVNC_PUBLIC_URL=https://vnc-backlmbot.simplapp.com.br
 ```
+
+`VITE_NOVNC_PUBLIC_URL` (ou `NOVNC_PUBLIC_URL`) é lida em **runtime** e vai para `/config.js` — basta redeploy. Padrão: `https://vnc-backlmbot.simplapp.com.br`.
 
 O browser chama a API direto. Evita 502 no `/api` do nginx.
 

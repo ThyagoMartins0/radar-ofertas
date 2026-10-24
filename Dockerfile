@@ -15,6 +15,8 @@ COPY . .
 
 ARG VITE_API_BASE_URL=
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ARG VITE_NOVNC_PUBLIC_URL=
+ENV VITE_NOVNC_PUBLIC_URL=${VITE_NOVNC_PUBLIC_URL}
 
 RUN npm run build
 
@@ -53,6 +55,10 @@ RUN printf '%s\n' \
   'url="${url%/}"' \
   'url=$(printf "%s" "$url" | tr -cd "A-Za-z0-9._/:?-")' \
   'printf "window.__API_BASE_URL__=\"%s\";\\n" "$url" > /usr/share/nginx/html/config.js' \
+  'vnc="${NOVNC_PUBLIC_URL:-${VITE_NOVNC_PUBLIC_URL:-https://vnc-backlmbot.simplapp.com.br}}"' \
+  'vnc="${vnc%/}"' \
+  'vnc=$(printf "%s" "$vnc" | tr -cd "A-Za-z0-9._/:?=&-")' \
+  'printf "window.__NOVNC_PUBLIC_URL__=\"%s\";\\n" "$vnc" >> /usr/share/nginx/html/config.js' \
   > /docker-entrypoint.d/18-normalize-upstream.envsh \
   && chmod +x /docker-entrypoint.d/18-normalize-upstream.envsh
 
