@@ -1,62 +1,33 @@
 # Radar Ofertas — Frontend
 
-SPA React (Vite). **Não** inclui banco nem workers — só UI + proxy HTTP para o **radar-ofertas-backend**.
+SPA React + nginx (produção) ou Vite (dev). Backend: **radar-ofertas-backend**.
 
-## Variáveis (`cp .env.example .env`)
+## Variáveis
 
-| Variável | Quando |
-|----------|--------|
-| `VITE_DEV_API_PROXY_TARGET` | `npm run dev` ou Docker dev — destino do proxy `/api` |
-| `VITE_API_BASE_URL` | Build com API em outro domínio (sem proxy nginx) |
-| `API_PROXY_UPSTREAM` | Docker prod — `host:porta` da API (ex. `host.docker.internal:3001` ou `api:3001`) |
+| Arquivo | Uso |
+|---------|-----|
+| `.env.example` | Local + docker compose |
+| `.env.dokploy.example` | Copiar para o painel Dokploy |
 
-No backend: `API_CORS_ORIGINS` com a URL do painel, se usar `VITE_API_BASE_URL` direto.
+| Variável | Onde |
+|----------|------|
+| `API_PROXY_UPSTREAM` | Runtime nginx/Dokploy — `host:3001` interno |
+| `VITE_API_BASE_URL` | Build (Dokploy build arg) se API for outro domínio |
+| `VITE_DEV_API_PROXY_TARGET` | `npm run dev` ou docker dev |
 
-## Local (sem Docker)
+## Local
 
 ```bash
+cp .env.example .env
 npm install
-npm run dev   # http://localhost:5173
+npm run dev
 ```
-
-Backend em outro terminal: `npm run api` no repo backend.
 
 ## Docker
 
-**Produção** (nginx + SPA, proxy `/api`):
-
 ```bash
-docker compose up -d --build
-# http://localhost:3000
+docker compose up -d --build          # :3000 → nginx :80
+docker compose --profile dev up -d    # Vite :5173
 ```
 
-**Desenvolvimento** (Vite HMR):
-
-```bash
-docker compose --profile dev up -d --build
-# http://localhost:5173
-```
-
-Scripts npm: `npm run docker:up`, `docker:dev`, `docker:down`, `docker:logs`.
-
-### API na rede Docker do backend
-
-```bash
-cp docker-compose.backend-network.yml.example docker-compose.override.yml
-# API_PROXY_UPSTREAM=api:3001
-docker compose up -d --build
-```
-
-### Dokploy
-
-- **Build context:** pasta `frontend/` (ou raiz se o repo for só o front).
-- **Dockerfile:** `docker/Dockerfile.prod`
-- **Porta:** `80` → mapear para domínio do painel.
-- **Env:** `API_PROXY_UPSTREAM` = host interno da API (não use `DATABASE_URL` aqui).
-
-## Testes
-
-```bash
-npm test
-npm run test:e2e
-```
+Dokploy: ver [DOKPLOY.md](./DOKPLOY.md).

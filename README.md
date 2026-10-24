@@ -1,14 +1,11 @@
 # Radar Ofertas — Frontend
 
-Repositório do painel React. Backend em **radar-ofertas-backend**.
-
 ```bash
 cd frontend
-cp .env.example .env
-npm run docker:up    # produção :3000
-# ou: npm run docker:dev   # Vite :5173
+cp .env.example .env          # local
+cp .env.dokploy.example       # referência Dokploy → ver DOKPLOY.md
 ```
 
-Detalhes: [frontend/README.md](frontend/README.md).
+**Dokploy:** context `.` | `Dockerfile` na raiz | Container Port **80** | env `API_PROXY_UPSTREAM`.
 
-**Dokploy:** build context = raiz do repo, `Dockerfile` na raiz, porta `80`, env `API_PROXY_UPSTREAM`. Ver [frontend/DOKPLOY.md](frontend/DOKPLOY.md).
+Backend: repositório **radar-ofertas-backend**.

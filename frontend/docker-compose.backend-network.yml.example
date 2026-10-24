@@ -1,21 +1,17 @@
-# Override opcional: frontend na mesma rede Docker do backend.
+# cp docker-compose.backend-network.yml.example docker-compose.override.yml
 #
-#   cp docker-compose.backend-network.yml.example docker-compose.override.yml
-#   # Ajuste BACKEND_NETWORK se o nome da rede for outro (docker network ls)
-#
-#   API_PROXY_UPSTREAM=api:3001
-#   BACKEND_NETWORK=radar-ofertas-backend_default
+# API_PROXY_UPSTREAM = nome do serviço/container da API na rede compartilhada.
 
 services:
   frontend:
     environment:
-      API_PROXY_UPSTREAM: api:3001
+      API_PROXY_UPSTREAM: ${API_PROXY_UPSTREAM:-api:3001}
     networks:
       - backend
 
   frontend-dev:
     environment:
-      VITE_DEV_API_PROXY_TARGET: http://api:3001
+      VITE_DEV_API_PROXY_TARGET: http://${API_PROXY_UPSTREAM:-api:3001}
     networks:
       - backend
 
