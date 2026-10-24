@@ -10,3 +10,5 @@ npm run docker:up    # produção :3000
 ```
 
 Detalhes: [frontend/README.md](frontend/README.md).
+
+**Dokploy:** build context = raiz do repo, `Dockerfile` na raiz, porta `80`, env `API_PROXY_UPSTREAM`. Ver [frontend/DOKPLOY.md](frontend/DOKPLOY.md).
