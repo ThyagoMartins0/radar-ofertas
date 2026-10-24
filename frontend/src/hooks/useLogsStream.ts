@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import type { LogsStreamLogEvent, LogsStreamReadyEvent } from '@radar/shared';
+import type { LogsStreamLogEvent, LogsStreamReadyEvent } from '../types/api-types.js';
 
 import { getAccessToken } from '../services/auth-storage.js';
 import { readSseStream } from '../utils/sse.js';

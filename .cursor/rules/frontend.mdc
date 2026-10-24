@@ -6,13 +6,13 @@ alwaysApply: false
 
 # Frontend React
 
-Entry dev: `npm run dev:frontend` → `:5173` (proxy `/api` → `:3001`).
+Entry dev: `cd frontend && npm run dev` → `:5173` (proxy `/api` → `:3001`).
 
 ## Stack
 
 - React 19 + React Router 7 + Vite 7
 - CSS modular em `frontend/src/styles/` — sem UI framework
-- Vitest + Testing Library para componentes (`npm run test --workspace=frontend`)
+- Vitest + Testing Library para componentes (`cd frontend && npm test`)
 - Playwright E2E (`npm run test:e2e`)
 
 ## Estrutura
@@ -34,7 +34,7 @@ frontend/src/
 
 - Imports relativos com extensão `.js`
 - Requisições HTTP apenas em `services/` — páginas usam hooks ou chamam `api` indiretamente
-- Tipos da API em `packages/shared/` — import via `@radar/shared` (frontend reexporta em `types/api.ts`)
+- Tipos da API em `frontend/src/types/api-types.ts` (reexport em `types/api.ts`)
 - Feedback: `ToastProvider`
 - Polling: `usePolling` (QR WhatsApp, worker status)
 - Carregamento inicial: `useAsyncLoad` quando aplicável

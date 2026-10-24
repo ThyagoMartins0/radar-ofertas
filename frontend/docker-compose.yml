@@ -1,0 +1,45 @@
+# Painel React — repositório separado do backend (radar-ofertas-backend).
+#
+#   cp .env.example .env
+#   docker compose --profile dev up -d frontend-dev
+#   docker compose --profile prod up -d --build frontend
+#
+# Backend deve expor a API em http://localhost:3001 (API_PORT no .env do backend).
+
+services:
+  frontend-dev:
+    profiles: [dev]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      VITE_DEV_API_PROXY_TARGET: ${VITE_DEV_API_PROXY_TARGET:-http://host.docker.internal:3001}
+      VITE_DEV_HOST: ${VITE_DEV_HOST:-0.0.0.0}
+      VITE_USE_POLLING: ${VITE_USE_POLLING:-true}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "${VITE_DEV_PORT:-5173}:5173"
+
+  frontend:
+    profiles: [prod]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      API_PROXY_UPSTREAM: ${API_PROXY_UPSTREAM:-host.docker.internal:3001}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
