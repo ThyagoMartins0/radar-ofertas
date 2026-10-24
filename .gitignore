@@ -1,6 +1,5 @@
 .env
-build
-frontend/dist
+dist
 node_modules
 auth_info_baileys
 data/

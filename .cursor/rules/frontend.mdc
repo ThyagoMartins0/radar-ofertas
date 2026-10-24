@@ -1,24 +1,24 @@
 ---
-description: SPA React em frontend/ — Vite, React Router, tema claro/escuro
-globs: frontend/**/*
+description: SPA React na raiz do repo — Vite, React Router, tema claro/escuro
+globs: src/**/*
 alwaysApply: false
 ---
 
 # Frontend React
 
-Entry dev: `cd frontend && npm run dev` → `:5173` (proxy `/api` → `:3001`).
+Entry dev: `npm run dev` → `:5173` (proxy `/api` → `:3001`).
 
 ## Stack
 
 - React 19 + React Router 7 + Vite 7
-- CSS modular em `frontend/src/styles/` — sem UI framework
-- Vitest + Testing Library para componentes (`cd frontend && npm test`)
+- CSS modular em `src/styles/` — sem UI framework
+- Vitest + Testing Library para componentes (`npm test`)
 - Playwright E2E (`npm run test:e2e`)
 
 ## Estrutura
 
 ```
-frontend/src/
+src/
 ├── services/      # api.ts (fetch REST), auth-storage.ts
 ├── types/         # api.ts — tipos espelhados da API
 ├── contexts/      # AuthProvider, auth-context
@@ -34,7 +34,7 @@ frontend/src/
 
 - Imports relativos com extensão `.js`
 - Requisições HTTP apenas em `services/` — páginas usam hooks ou chamam `api` indiretamente
-- Tipos da API em `frontend/src/types/api-types.ts` (reexport em `types/api.ts`)
+- Tipos da API em `src/types/api-types.ts` (reexport em `types/api.ts`)
 - Feedback: `ToastProvider`
 - Polling: `usePolling` (QR WhatsApp, worker status)
 - Carregamento inicial: `useAsyncLoad` quando aplicável
@@ -45,8 +45,8 @@ frontend/src/
 
 - Componentes: `*.test.tsx` com Vitest + jsdom
 - Utils puros: `*.test.ts` no mesmo workspace
-- E2E: `frontend/e2e/` com API mockada
-- Root `npm test` executa backend (node:test) + frontend (vitest)
+- E2E: `e2e/` com API mockada
+- `npm test` — Vitest (este repositório é só o painel)
 
 ## Segurança
 

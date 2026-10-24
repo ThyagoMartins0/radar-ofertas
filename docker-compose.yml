@@ -1,6 +1,6 @@
-# Frontend apenas — API no repo radar-ofertas-backend.
+# Painel React na raiz — API no repo radar-ofertas-backend.
 #
-#   cd frontend && cp .env.example .env
+#   cp .env.example .env
 #   docker compose up -d --build
 #   docker compose --profile dev up -d --build
 
